@@ -15,9 +15,9 @@ export default class PostModel {
     return users;
   }
 
-  static async findOne(obj) {
+  static async findOne(payload) {
     const collection = this.getCollection();
-    const user = await collection.findOne(obj);
+    const user = await collection.findOne(payload);
 
     return user;
   }
@@ -27,5 +27,11 @@ export default class PostModel {
     const data = await collection.insertOne(payload);
     // console.log(data);
     return "Success add new user";
+  }
+
+  static async updateOne(filter, payload){
+    const collection = this.getCollection();
+    await collection.updateOne(filter, payload)
+    return "Success add new comment"
   }
 }

@@ -28,6 +28,13 @@ export const postTypeDefs = `#graphql
 
     type Mutation{
         AddPost(newPost: PostInput): Post
+        AddComment(newComment: CommentInput): String
+    }
+
+    input CommentInput{
+        content: String
+        username: String
+        postId: ID
     }
         
     input PostInput{
@@ -60,6 +67,13 @@ export const postResolvers = {
         console.log(newPost)
         const post = await PostModel.create(newPost)
         return post 
+    },
+    AddComment: async function (_, args) {
+        const {newComment} = args
+        // console.log(newComment)
+
+        const data = await PostModel.updateOne({_id: new ObjectId(newComment.postId)}, { $push: { comments: { content: newComment.content, username: newComment.username } } })
+        return data
     }
   }
 };
