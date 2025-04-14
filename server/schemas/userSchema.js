@@ -1,6 +1,7 @@
 import UserModel from "../models/userModel.js";
 import { hash, compare } from "../helpers/bcrypt.js";
 import { signToken, verifyToken } from "../helpers/jwt.js";
+import { ObjectId } from "mongodb"
 
 export const userTypeDefs = `#graphql
     type User {
@@ -15,6 +16,7 @@ export const userTypeDefs = `#graphql
         getUsers: [User]
         login(newLogin: LoginInput): String
         searchUser(search: SearchInput):[User]
+        getUserById(id: ID): User
     }
 
     input SearchInput {
@@ -77,11 +79,13 @@ export const userResolvers = {
       });
       return data
     },
-    //   getUser: async function(_, args) {
-    //     const user = await UserModel.findOne(args.id)
+      getUserById: async function(_, args) {
+        //belum yang menampilkan yang follow
+        const {id} = args
+        const user = await UserModel.findOne({_id: new ObjectId(id)})
 
-    //     return user
-    //   }
+        return user
+      }
   },
   Mutation: {
     register: async function (_, args) {
