@@ -32,6 +32,6 @@ export default class PostModel {
   static async updateOne(filter, payload){
     const collection = this.getCollection();
     await collection.updateOne(filter, payload)
-    return "Success add new comment"
+    return "Success updating post"
   }
 }

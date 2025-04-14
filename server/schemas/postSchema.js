@@ -29,6 +29,7 @@ export const postTypeDefs = `#graphql
     type Mutation{
         AddPost(newPost: PostInput): Post
         AddComment(newComment: CommentInput): String
+        LikePost(username:String, postId: ID): String
     }
 
     input CommentInput{
@@ -71,9 +72,24 @@ export const postResolvers = {
     AddComment: async function (_, args) {
         const {newComment} = args
         // console.log(newComment)
+        if(!newComment.content){
+            throw new Error("comment is required")
+        }
+        if(!newComment.username){
+            throw new Error("username is required")
+        }
 
-        const data = await PostModel.updateOne({_id: new ObjectId(newComment.postId)}, { $push: { comments: { content: newComment.content, username: newComment.username } } })
-        return data
+        await PostModel.updateOne({_id: new ObjectId(newComment.postId)}, { $push: { comments: { content: newComment.content, username: newComment.username } } })
+        return "Success add new comment"
+    },
+    LikePost: async function (_, args) {
+        const {username, postId} = args
+        // console.log(username, postId)
+        if(!username){
+            throw new Error("username is required")
+        }
+        await PostModel.updateOne({_id: new ObjectId(postId)}, {$push: {likes: {username}}})
+        return "Success liking post"
     }
   }
 };
