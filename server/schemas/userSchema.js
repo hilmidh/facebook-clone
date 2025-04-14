@@ -14,6 +14,11 @@ export const userTypeDefs = `#graphql
     type Query {
         getUsers: [User]
         login(newLogin: LoginInput): String
+        searchUser(search: SearchInput):[User]
+    }
+
+    input SearchInput {
+        keyword:String
     }
 
     input UserInput {
@@ -50,16 +55,27 @@ export const userResolvers = {
       }
 
       console.log(checkUsername);
-      const validPassword = compare(newLogin.password, checkUsername.password)
+      const validPassword = compare(newLogin.password, checkUsername.password);
 
-      if(!validPassword){
-        throw new Error("Invalid username/password")
+      if (!validPassword) {
+        throw new Error("Invalid username/password");
       }
-      const token = signToken({id: checkUsername._id})
+      const token = signToken({ id: checkUsername._id });
 
-    //   console.log(checkUsername._id)
-    //   console.log(token)
-      return `Bearer ${token}`
+      //   console.log(checkUsername._id)
+      //   console.log(token)
+      return `Bearer ${token}`;
+    },
+    searchUser: async function (_, args) {
+      const { search } = args;
+      console.log(search);
+      const data = await UserModel.find({
+        $or: [
+          { name: { $regex: search.keyword, $options: "i" } },
+          { username: { $regex: search.keyword, $options: "i" } },
+        ],
+      });
+      return data
     },
     //   getUser: async function(_, args) {
     //     const user = await UserModel.findOne(args.id)

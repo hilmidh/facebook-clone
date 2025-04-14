@@ -9,9 +9,9 @@ export default class UserModel {
     return collection;
   }
 
-  static async find() {
+  static async find(obj) {
     const collection = this.getCollection();
-    const users = await collection.find().toArray();
+    const users = await collection.find(obj).toArray();
 
     return users;
   }
