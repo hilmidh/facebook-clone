@@ -1,5 +1,6 @@
 import UserModel from "../models/userModel.js";
 import { hash, compare } from "../helpers/bcrypt.js";
+import { signToken, verifyToken } from "../helpers/jwt.js";
 
 export const userTypeDefs = `#graphql
     type User {
@@ -12,12 +13,18 @@ export const userTypeDefs = `#graphql
 
     type Query {
         getUsers: [User]
+        login(newLogin: LoginInput): String
     }
 
     input UserInput {
         name:String
         username: String
         email: String
+        password: String
+    }
+
+    input LoginInput {
+        username: String
         password: String
     }
 
@@ -33,6 +40,27 @@ export const userResolvers = {
 
       return users;
     },
+    login: async function (_, args) {
+      const { newLogin } = args;
+      const checkUsername = await UserModel.findOne({
+        username: newLogin.username,
+      });
+      if (!checkUsername) {
+        throw new Error("Invalid username/password");
+      }
+
+      console.log(checkUsername);
+      const validPassword = compare(newLogin.password, checkUsername.password)
+
+      if(!validPassword){
+        throw new Error("Invalid username/password")
+      }
+      const token = signToken({id: checkUsername._id})
+
+    //   console.log(checkUsername._id)
+    //   console.log(token)
+      return `Bearer ${token}`
+    },
     //   getUser: async function(_, args) {
     //     const user = await UserModel.findOne(args.id)
 
@@ -42,7 +70,6 @@ export const userResolvers = {
   Mutation: {
     register: async function (_, args) {
       const { newUser } = args;
-      
 
       if (!newUser.username) {
         throw new Error("Username is required");
@@ -51,7 +78,9 @@ export const userResolvers = {
         throw new Error("A valid email is required.");
       }
       if (!newUser.password || newUser.password.length < 5) {
-        throw new Error("Password is required and must be at least 5 characters long.");
+        throw new Error(
+          "Password is required and must be at least 5 characters long."
+        );
       }
 
       const existingUsername = await UserModel.findOne({
@@ -63,7 +92,6 @@ export const userResolvers = {
         );
       }
 
-      // Check if email already exists
       const existingEmail = await UserModel.findOne({ email: newUser.email });
       if (existingEmail) {
         throw new Error(
@@ -71,8 +99,8 @@ export const userResolvers = {
         );
       }
 
-      newUser.password = hash(newUser.password)
-    //   console.log(newUser, "<<<<<<<<<<<ARGGSSSS");
+      newUser.password = hash(newUser.password);
+      //   console.log(newUser, "<<<<<<<<<<<ARGGSSSS");
 
       const message = await UserModel.create(newUser);
 
