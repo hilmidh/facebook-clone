@@ -1,10 +1,9 @@
-
 import { getDB } from "../config/mongodb.js";
 
-export default class UserModel {
+export default class PostModel {
   static getCollection() {
     const db = getDB();
-    const collection = db.collection("users");
+    const collection = db.collection("posts");
 
     return collection;
   }
