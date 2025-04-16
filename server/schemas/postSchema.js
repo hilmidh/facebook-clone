@@ -70,7 +70,8 @@ export const postResolvers = {
         const post = await PostModel.create(newPost)
         return post 
     },
-    AddComment: async function (_, args) {
+    AddComment: async function (_, args, contextValue) {
+        await contextValue.auth()
         const {newComment} = args
         // console.log(newComment)
         if(!newComment.content){
