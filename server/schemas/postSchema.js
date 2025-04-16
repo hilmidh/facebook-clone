@@ -84,7 +84,8 @@ export const postResolvers = {
         await PostModel.updateOne({_id: new ObjectId(newComment.postId)}, { $push: { comments: { content: newComment.content, username: newComment.username } } })
         return "Success add new comment"
     },
-    LikePost: async function (_, args) {
+    LikePost: async function (_, args, contextValue) {
+        await contextValue.auth()
         const {username, postId} = args
         // console.log(username, postId)
         if(!username){
