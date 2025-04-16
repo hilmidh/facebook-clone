@@ -55,7 +55,8 @@ export const postResolvers = {
     },
   },
   Mutation: {
-    AddPost: async function(_, args) {
+    AddPost: async function(_, args, contextValue) {
+        await contextValue.auth()
         const {newPost} = args
         if(!newPost.authorId){
             throw new Error("authorId is required")
