@@ -1,17 +1,51 @@
 import "dotenv/config";
 import { ApolloServer } from "@apollo/server";
 import { startStandaloneServer } from "@apollo/server/standalone";
-import { userResolvers, userTypeDefs } from './schemas/userSchema.js';
+import { userResolvers, userTypeDefs } from "./schemas/userSchema.js";
 import { postResolvers, postTypeDefs } from "./schemas/postSchema.js";
-
+import { verifyToken } from "../server/helpers/jwt.js";
+import { ObjectId } from "mongodb";
+import UserModel from "./models/userModel.js";
 
 const server = new ApolloServer({
-    typeDefs: [userTypeDefs, postTypeDefs],
-    resolvers: [userResolvers, postResolvers],
-  });
+  typeDefs: [userTypeDefs, postTypeDefs],
+  resolvers: [userResolvers, postResolvers],
+});
 
 const { url } = await startStandaloneServer(server, {
-  listen: { port: 3000 }, 
+  // introspection: true,
+  listen: { port: 3000 },
+  context: async ({ req }) => {
+    const operationName = req.body.operationName;
+
+    // Allow introspection queries to bypass authentication
+    if (operationName === "IntrospectionQuery") {
+      return {};
+    }
+    const auth = async () => {
+      const bearerToken = req.headers.authorization;
+      if (!bearerToken) {
+        throw new Error("Invalid token");
+      }
+
+      const [, token] = bearerToken.split(" ");
+      if (!token) {
+        throw new Error("Invalid token");
+      }
+
+      const data = verifyToken(token);
+      // res.json(data)
+      console.log(data);
+
+      const user = await UserModel.findOne(data.id);
+      if (!user) {
+        throw new Error("Invalid token");
+      }
+      // res.json(user)
+      return user;
+    };
+    return { auth };
+  },
 });
 
 console.log(`🚀  Server ready at: ${url}`);
