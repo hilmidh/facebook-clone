@@ -10,6 +10,14 @@ export const userTypeDefs = `#graphql
         username: String
         email: String
         password: String
+        followersData: [UserFollow]
+        followingData: [UserFollow]
+    }
+
+    type UserFollow{
+        _id: ID
+        username: String
+        name: String
     }
 
     type Query {

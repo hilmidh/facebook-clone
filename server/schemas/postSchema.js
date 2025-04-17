@@ -1,5 +1,6 @@
 import PostModel from "../models/postModel.js";
 import { ObjectId } from "mongodb";
+import redis from "../config/redis.js";
 
 export const postTypeDefs = `#graphql
     type Post{
@@ -60,13 +61,22 @@ export const postResolvers = {
   Query: {
     getPosts: async function (_, __, contextValue) {
       await contextValue.auth();
+      // const posts = await PostModel.find();
+      // return posts;
+      const cachedPosts = await redis.get("posts");
+      console.log(cachedPosts);
+      if (cachedPosts) return JSON.parse(cachedPosts);
+
       const posts = await PostModel.find();
+
+      await redis.set("posts", JSON.stringify(posts));
+
       return posts;
     },
     getPostById: async function (_, args, contextValue) {
       await contextValue.auth();
-      const post = await PostModel.findOne({_id: new ObjectId(args.id)});
-      return post
+      const post = await PostModel.findOne({ _id: new ObjectId(args.id) });
+      return post;
     },
   },
   Mutation: {
@@ -85,8 +95,9 @@ export const postResolvers = {
       newPost.comments = [];
       newPost.likes = [];
       newPost.authorId = new ObjectId(user._id);
-      console.log(newPost);
+      // console.log(newPost);
       const data = await PostModel.create(newPost);
+      await redis.del("posts");
       return data;
     },
     AddComment: async function (_, args, contextValue) {

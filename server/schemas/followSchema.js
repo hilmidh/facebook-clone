@@ -33,18 +33,23 @@ export const followResolvers = {
     AddFollow: async function (_, args, contextValue) {
       const user = await contextValue.auth();
       const { newFollow } = args;
-      newFollow.followerId = user._id
-      newFollow.followingId = new ObjectId(newFollow.followingId)
+      newFollow.followerId = user._id;
+      newFollow.followingId = new ObjectId(newFollow.followingId);
       newFollow.createdAt = new Date();
       newFollow.updatedAt = new Date();
       //   console.log(newFollow);
       const validate = await FollowModel.find({
-        followerId: user._id,
-        followingId: newFollow.followingId
-      })
+        $and: [
+          { followerId: user._id },
+          { followingId: newFollow.followingId },
+        ],
+      });
+    //   console.log(validate, "<<<<<<<<<<<<<,")
 
-      if(validate){
-        throw new Error("You already follow this account")
+    //   console.log(newFollow)
+
+      if (validate.length > 0) {
+        throw new Error("You already follow this account");
       }
       const data = await FollowModel.create(newFollow);
       return data;
