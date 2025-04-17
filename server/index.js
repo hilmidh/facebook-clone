@@ -37,7 +37,7 @@ const { url } = await startStandaloneServer(server, {
       // res.json(data)
       console.log(data);
 
-      const user = await UserModel.findOne(data.id);
+      const user = await UserModel.findOne({ _id: new ObjectId(data.id) });
       if (!user) {
         throw new Error("Invalid token");
       }

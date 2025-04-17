@@ -1,5 +1,5 @@
 import PostModel from "../models/postModel.js";
-import { ObjectId } from "mongodb"
+import { ObjectId } from "mongodb";
 
 export const postTypeDefs = `#graphql
     type Post{
@@ -49,50 +49,64 @@ export const postTypeDefs = `#graphql
 
 export const postResolvers = {
   Query: {
-    getPosts: async function () {
+    getPosts: async function (_, __, contextValue) {
+      await contextValue.auth();
       const posts = await PostModel.find();
-      return posts
+      return posts;
     },
   },
   Mutation: {
-    AddPost: async function(_, args, contextValue) {
-        await contextValue.auth()
-        const {newPost} = args
-        if(!newPost.authorId){
-            throw new Error("authorId is required")
-        }
+    AddPost: async function (_, args, contextValue) {
+      await contextValue.auth();
+      const { newPost } = args;
+      if (!newPost.authorId) {
+        throw new Error("authorId is required");
+      }
 
-        if(!newPost.content){
-            throw new Error("content is required")
-        }
-        newPost.authorId = new ObjectId(newPost.authorId)
-        console.log(newPost)
-        const post = await PostModel.create(newPost)
-        return post 
+      if (!newPost.content) {
+        throw new Error("content is required");
+      }
+      newPost.authorId = new ObjectId(newPost.authorId);
+      console.log(newPost);
+      const post = await PostModel.create(newPost);
+      return post;
     },
     AddComment: async function (_, args, contextValue) {
-        await contextValue.auth()
-        const {newComment} = args
-        // console.log(newComment)
-        if(!newComment.content){
-            throw new Error("comment is required")
-        }
-        if(!newComment.username){
-            throw new Error("username is required")
-        }
+      await contextValue.auth();
+      const { newComment } = args;
+      // console.log(newComment)
+      if (!newComment.content) {
+        throw new Error("comment is required");
+      }
+      if (!newComment.username) {
+        throw new Error("username is required");
+      }
 
-        await PostModel.updateOne({_id: new ObjectId(newComment.postId)}, { $push: { comments: { content: newComment.content, username: newComment.username } } })
-        return "Success add new comment"
+      await PostModel.updateOne(
+        { _id: new ObjectId(newComment.postId) },
+        {
+          $push: {
+            comments: {
+              content: newComment.content,
+              username: newComment.username,
+            },
+          },
+        }
+      );
+      return "Success add new comment";
     },
     LikePost: async function (_, args, contextValue) {
-        await contextValue.auth()
-        const {username, postId} = args
-        // console.log(username, postId)
-        if(!username){
-            throw new Error("username is required")
-        }
-        await PostModel.updateOne({_id: new ObjectId(postId)}, {$push: {likes: {username}}})
-        return "Success liking post"
-    }
-  }
+      await contextValue.auth();
+      const { username, postId } = args;
+      // console.log(username, postId)
+      if (!username) {
+        throw new Error("username is required");
+      }
+      await PostModel.updateOne(
+        { _id: new ObjectId(postId) },
+        { $push: { likes: { username } } }
+      );
+      return "Success liking post";
+    },
+  },
 };
