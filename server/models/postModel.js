@@ -8,25 +8,45 @@ export default class PostModel {
     return collection;
   }
 
-  static async find(obj) {
+  static async find() {
     const collection = this.getCollection();
-    const posts = await collection.find(obj).toArray();
+    const posts = await collection.aggregate([
+      {$sort: {createdAt: -1}},
+      {$lookup: {
+        from: "users",
+        localField: "authorId",
+        foreignField: "_id",
+        as: "Author"
+      }},
+      { $unwind: { path: '$Author' } }
+    ]).toArray();
+
+    // console.log(posts)
 
     return posts;
   }
 
-  static async findOne(payload) {
+  static async findOne(filter) {
     const collection = this.getCollection();
-    const post = await collection.findOne(payload);
+    const post = await collection.aggregate([
+      {$match: filter},
+      {$lookup: {
+        from: "users",
+        localField: "authorId",
+        foreignField: "_id",
+        as: "Author"
+      }},
+      { $unwind: { path: '$Author' } }
+    ]).toArray();
 
-    return post;
+    return post[0];
   }
 
   static async create(payload) {
     const collection = this.getCollection();
-    const data = await collection.insertOne(payload);
+    await collection.insertOne(payload);
     // console.log(data);
-    return "Success add new user";
+    return "Success add new post";
   }
 
   static async updateOne(filter, payload){

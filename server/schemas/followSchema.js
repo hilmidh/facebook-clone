@@ -1,3 +1,4 @@
+import { ObjectId } from "mongodb";
 import FollowModel from "../models/followModel.js";
 
 export const followTypeDefs = `#graphql
@@ -11,7 +12,6 @@ export const followTypeDefs = `#graphql
 
     input FollowInput{
         followingId: ID
-        followerId: ID
     }
 
     type Mutation{
@@ -30,13 +30,24 @@ export const followResolvers = {
     },
   },
   Mutation: {
-    AddFollow: async function (_, args) {
+    AddFollow: async function (_, args, contextValue) {
+      const user = await contextValue.auth();
       const { newFollow } = args;
-      newFollow.createdAt = new Date()
-      newFollow.updatedAt = new Date()
-      console.log(newFollow);
+      newFollow.followerId = user._id
+      newFollow.followingId = new ObjectId(newFollow.followingId)
+      newFollow.createdAt = new Date();
+      newFollow.updatedAt = new Date();
+      //   console.log(newFollow);
+      const validate = await FollowModel.find({
+        followerId: user._id,
+        followingId: newFollow.followingId
+      })
+
+      if(validate){
+        throw new Error("You already follow this account")
+      }
       const data = await FollowModel.create(newFollow);
-      return data
+      return data;
     },
   },
 };
