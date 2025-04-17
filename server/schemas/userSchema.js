@@ -1,6 +1,6 @@
 import UserModel from "../models/userModel.js";
 import { hash, compare } from "../helpers/bcrypt.js";
-import { signToken, verifyToken } from "../helpers/jwt.js";
+import { signToken } from "../helpers/jwt.js";
 import { ObjectId } from "mongodb";
 
 export const userTypeDefs = `#graphql

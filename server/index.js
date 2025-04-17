@@ -16,12 +16,12 @@ const { url } = await startStandaloneServer(server, {
   // introspection: true,
   listen: { port: 3000 },
   context: async ({ req }) => {
-    const operationName = req.body.operationName;
+    // const operationName = req.body.operationName;
 
-    // Allow introspection queries to bypass authentication
-    if (operationName === "IntrospectionQuery") {
-      return {};
-    }
+    // // Allow introspection queries to bypass authentication
+    // if (operationName === "IntrospectionQuery") {
+    //   return {};
+    // }
     const auth = async () => {
       const bearerToken = req.headers.authorization;
       if (!bearerToken) {
