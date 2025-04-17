@@ -10,16 +10,16 @@ export default class PostModel {
 
   static async find(obj) {
     const collection = this.getCollection();
-    const users = await collection.find(obj).toArray();
+    const posts = await collection.find(obj).toArray();
 
-    return users;
+    return posts;
   }
 
   static async findOne(payload) {
     const collection = this.getCollection();
-    const user = await collection.findOne(payload);
+    const post = await collection.findOne(payload);
 
-    return user;
+    return post;
   }
 
   static async create(payload) {

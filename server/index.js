@@ -3,13 +3,14 @@ import { ApolloServer } from "@apollo/server";
 import { startStandaloneServer } from "@apollo/server/standalone";
 import { userResolvers, userTypeDefs } from "./schemas/userSchema.js";
 import { postResolvers, postTypeDefs } from "./schemas/postSchema.js";
+import { followResolvers, followTypeDefs } from "./schemas/followSchema.js";
 import { verifyToken } from "../server/helpers/jwt.js";
 import { ObjectId } from "mongodb";
 import UserModel from "./models/userModel.js";
 
 const server = new ApolloServer({
-  typeDefs: [userTypeDefs, postTypeDefs],
-  resolvers: [userResolvers, postResolvers],
+  typeDefs: [userTypeDefs, postTypeDefs, followTypeDefs],
+  resolvers: [userResolvers, postResolvers, followResolvers],
 });
 
 const { url } = await startStandaloneServer(server, {
