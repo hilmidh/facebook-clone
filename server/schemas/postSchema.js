@@ -64,7 +64,7 @@ export const postResolvers = {
       // const posts = await PostModel.find();
       // return posts;
       const cachedPosts = await redis.get("posts");
-      console.log(cachedPosts);
+      // console.log(cachedPosts);
       if (cachedPosts) return JSON.parse(cachedPosts);
 
       const posts = await PostModel.find();

@@ -64,7 +64,7 @@ export const userResolvers = {
         throw new Error("Invalid username/password");
       }
 
-      console.log(checkUsername);
+      // console.log(checkUsername);
       const validPassword = compare(newLogin.password, checkUsername.password);
 
       if (!validPassword) {
@@ -74,7 +74,7 @@ export const userResolvers = {
 
       //   console.log(checkUsername._id)
       //   console.log(token)
-      return `Bearer ${token}`;
+      return token;
     },
     searchUser: async function (_, args) {
       const { search } = args;

@@ -36,7 +36,7 @@ const { url } = await startStandaloneServer(server, {
 
       const data = verifyToken(token);
       // res.json(data)
-      console.log(data);
+      // console.log(data);
 
       const user = await UserModel.findOne({ _id: new ObjectId(data.id) });
       if (!user) {
