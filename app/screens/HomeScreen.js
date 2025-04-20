@@ -57,7 +57,7 @@ export default function HomeScreen() {
 
       {/* Like and Comment Buttons */}
       <View style={styles.actions}>
-        <View style={styles.actions}>
+      <TouchableOpacity style={styles.actions}>
           <Icon
             name="thumbs-up"
             size={16}
@@ -67,7 +67,7 @@ export default function HomeScreen() {
           <Text style={styles.actionText}>
             {item.likes.length}
           </Text>
-        </View>
+          </TouchableOpacity>
         <View>
           <Text style={styles.actionText}>
             {item.comments.length === 0

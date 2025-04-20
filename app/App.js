@@ -64,25 +64,29 @@ export default function App() {
     <AuthContext.Provider value={{ isSignedIn, setIsSignedIn }}>
       <ApolloProvider client={client}>
         <NavigationContainer>
-          <Stack.Navigator>
-            <Stack.Screen
-              name="BerandaNavigator"
-              component={BerandaNavigator}
-              options={{
-                headerShown: false,
-              }}
-            />
-            <Stack.Screen
-              name="LoginScreen"
-              component={LoginScreen}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
-              name="RegisterScreen"
-              component={RegisterScreen}
-              options={{ headerShown: false }}
-            />
-          </Stack.Navigator>
+          {isSignedIn ? (
+            <BerandaNavigator />
+          ) : (
+            <Stack.Navigator>
+              <Stack.Screen
+                name="LoginScreen"
+                component={LoginScreen}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="RegisterScreen"
+                component={RegisterScreen}
+                options={{ headerShown: false }}
+              />
+              {/* <Stack.Screen
+                name="BerandaNavigator"
+                component={BerandaNavigator}
+                options={{
+                  headerShown: false,
+                }}
+              /> */}
+            </Stack.Navigator>
+          )}
         </NavigationContainer>
       </ApolloProvider>
     </AuthContext.Provider>

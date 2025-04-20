@@ -28,7 +28,7 @@ export default function LoginScreen() {
   const [handleLogin, { data, loading, error }] = useLazyQuery(LOGIN, {
     onCompleted: async (result) => {
       await SecureStore.setItemAsync("access_token", result.login);
-      // setIsLogin(true)
+      setIsSignedIn(true)
     }
   })
 
@@ -76,10 +76,10 @@ export default function LoginScreen() {
           Don't have an account? Register
         </Text>
       </TouchableOpacity>
-      <Button
+      {/* <Button
         title="Get Token"
         onPress={cekToken}
-      />
+      /> */}
       <StatusBar style="auto" />
     </View>
   );
