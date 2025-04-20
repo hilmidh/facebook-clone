@@ -1,55 +1,41 @@
-import React, { use, useState } from "react";
-import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity } from "react-native";
+import React from "react";
+import {
+  View,
+  Text,
+  FlatList,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
+import Icon from "react-native-vector-icons/FontAwesome";
 import { gql, useQuery } from "@apollo/client";
 
 const GET_POST = gql`
-query GetPosts {
-  getPosts {
-    _id
-    authorId
-    content
-    imgUrl
-    tags
-    comments {
-      username
+  query GetPosts {
+    getPosts {
+      _id
+      authorId
       content
-    }
-    likes {
-      username
-    }
-    createdAt
-    Author {
-      username
-      name
+      imgUrl
+      tags
+      comments {
+        username
+        content
+      }
+      likes {
+        username
+      }
+      createdAt
+      Author {
+        username
+        name
+      }
     }
   }
-}
-`
+`;
 
 export default function HomeScreen() {
-  const [apa, setAp] = useState("VKAAAA")
-  const [posts, setPosts] = useState([
-    {
-      id: "1",
-      username: "John Doe",
-      caption: "Enjoying a sunny day at the beach!",
-      image: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Beach_at_Fort_Lauderdale.jpg/1200px-Beach_at_Fort_Lauderdale.jpg", // Replace with actual image URL
-    },
-    {
-      id: "2",
-      username: "Jane Smith",
-      caption: "Had an amazing dinner last night!",
-      image: "https://via.placeholder.com/300x200", // Replace with actual image URL
-    },
-    {
-      id: "3",
-      username: "Alice Johnson",
-      caption: "Exploring the mountains!",
-      image: "https://via.placeholder.com/300x200", // Replace with actual image URL
-    }
-  ]);
-
-  const {data, loading, error} = useQuery(GET_POST)
+  const { data, loading, error } = useQuery(GET_POST);
 
   const renderPost = ({ item }) => (
     <View style={styles.postCard}>
@@ -61,39 +47,51 @@ export default function HomeScreen() {
           }}
           style={styles.avatar}
         />
-        <Text style={styles.username}>{item.username}</Text>
+        <Text style={styles.username}>{item.Author.name}</Text>
       </View>
+      {/* Caption */}
+      <Text style={styles.caption}>{item.content}</Text>
 
       {/* Post Image */}
-      <Image source={{ uri: item.image }} style={styles.postImage} />
-
-      {/* Caption */}
-      <Text style={styles.caption}>{item.caption}</Text>
+      <Image source={{ uri: item.imgUrl }} style={styles.postImage} />
 
       {/* Like and Comment Buttons */}
       <View style={styles.actions}>
-        <TouchableOpacity>
-          <Text style={styles.actionText}>Like</Text>
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <Text style={styles.actionText}>Comment</Text>
-        </TouchableOpacity>
+        <View style={styles.actions}>
+          <Icon
+            name="thumbs-up"
+            size={16}
+            color="#4267B2"
+            style={styles.icon}
+          />
+          <Text style={styles.actionText}>
+            {item.likes.length}
+          </Text>
+        </View>
+        <View>
+          <Text style={styles.actionText}>
+            {item.comments.length === 0
+              ? "0 Comment"
+              : item.comments.length === 1
+              ? "1 Comment"
+              : `${item.comments.length} Comments`}
+          </Text>
+        </View>
       </View>
     </View>
   );
 
-  if (loading) return <Text>loading...</Text>
-  if (error) return <Text>Error: {error.message}</Text>
+  if (loading) return <Text>loading...</Text>;
+  if (error) return <Text>Error..</Text>;
 
   return (
     <View style={styles.container}>
-      {/* <FlatList
-        data={posts}
-        keyExtractor={(item) => item.id}
+      <FlatList
+        data={data.getPosts}
+        keyExtractor={(data) => data._id}
         renderItem={renderPost}
         contentContainerStyle={styles.postsList}
-      /> */}
-      <Text>{JSON.stringify(data)}</Text>
+      />
     </View>
   );
 }
@@ -133,7 +131,7 @@ const styles = StyleSheet.create({
   },
   postImage: {
     width: "100%",
-    height: 200,
+    height: 500,
     borderRadius: 10,
     marginBottom: 10,
   },
@@ -146,7 +144,9 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   actionText: {
-    color: "#4267B2", // Facebook blue
-    fontWeight: "bold",
+    color: "#575757",
+  },
+  icon: {
+    marginRight: 5,
   },
 });
