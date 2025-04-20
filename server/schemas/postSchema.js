@@ -18,6 +18,7 @@ export const postTypeDefs = `#graphql
 
     type Author{
         username: String
+        name: String
     }
 
     type Comment{
