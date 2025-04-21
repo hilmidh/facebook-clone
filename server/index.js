@@ -8,6 +8,8 @@ import { verifyToken } from "../server/helpers/jwt.js";
 import { ObjectId } from "mongodb";
 import UserModel from "./models/userModel.js";
 
+const PORT = process.env.PORT || 3000
+
 const server = new ApolloServer({
   typeDefs: [userTypeDefs, postTypeDefs, followTypeDefs],
   resolvers: [userResolvers, postResolvers, followResolvers],
@@ -15,7 +17,7 @@ const server = new ApolloServer({
 
 const { url } = await startStandaloneServer(server, {
   // introspection: true,
-  listen: { port: 3000 },
+  listen: { port: PORT },
   context: async ({ req }) => {
     // const operationName = req.body.operationName;
 
