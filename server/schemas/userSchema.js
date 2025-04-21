@@ -25,6 +25,7 @@ export const userTypeDefs = `#graphql
         login(newLogin: LoginInput): String
         searchUser(search: SearchInput):[User]
         getUserById(id: ID): User
+        getSignedInUser: User
     }
 
     input SearchInput {
@@ -94,6 +95,10 @@ export const userResolvers = {
 
       return user;
     },
+    getSignedInUser: async function (_, __, contextValue) {
+      const user = await contextValue.auth();
+      return user
+    }
   },
   Mutation: {
     register: async function (_, args) {

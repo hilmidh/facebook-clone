@@ -1,47 +1,76 @@
 import { useState } from "react";
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { gql, useMutation } from "@apollo/client";
+
+const REGISTER = gql`
+mutation Register($newUser: UserInput) {
+  register(newUser: $newUser)
+}
+`
 
 export default function RegisterScreen() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("")
   const [password, setPassword] = useState("");
   const navigation = useNavigation();
 
-  const handleRegister = () => {
-    // Simple validation (replace with actual API call)
-    if (!name || !email || !password) {
-      alert("All fields are required!");
-      return;
+  const [handleRegister, { data, loading, error }] = useMutation(
+    REGISTER,
+    {
+      onCompleted: (result) => {
+        navigation.navigate("LoginScreen")
+      }
     }
-    alert("Registration Successful!");
-  };
+  )
+
+  const onSubmit = () => {
+    const payload = {
+      username,
+      password,
+      name,
+      email
+    }
+
+    handleRegister({
+      variables: {
+        newUser: payload
+      }
+    })
+  }
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Sign Up</Text>
       <TextInput
         style={styles.input}
-        placeholder="Full Name"
+        placeholder="Name"
         value={name}
-        onChangeText={setName}
+        onChangeText={(text) => setName(text)}
       />
       <TextInput
         style={styles.input}
         placeholder="Email"
         value={email}
-        onChangeText={setEmail}
+        onChangeText={(text) => setEmail(text)}
         keyboardType="email-address"
         autoCapitalize="none"
       />
       <TextInput
         style={styles.input}
+        placeholder="Username"
+        value={username}
+        onChangeText={(text) => setUsername(text)}
+      />
+      <TextInput
+        style={styles.input}
         placeholder="Password"
         value={password}
-        onChangeText={setPassword}
+        onChangeText={(text) => setPassword(text)}
         secureTextEntry
       />
-      <TouchableOpacity style={styles.button} onPress={handleRegister}>
+      <TouchableOpacity style={styles.button} onPress={onSubmit}>
         <Text style={styles.buttonText}>Sign Up</Text>
       </TouchableOpacity>
 

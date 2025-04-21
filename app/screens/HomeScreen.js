@@ -83,6 +83,7 @@ export default function HomeScreen() {
 
   if (loading) return <Text>loading...</Text>;
   if (error) return <Text>Error..</Text>;
+  console.log(data)
 
   return (
     <View style={styles.container}>

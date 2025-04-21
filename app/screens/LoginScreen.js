@@ -56,6 +56,7 @@ export default function LoginScreen() {
         style={styles.input}
         placeholder="Username"
         value={username}
+        autoCapitalize="none"
         onChangeText={(text) => setUsername(text)}
       />
       <TextInput
@@ -63,6 +64,7 @@ export default function LoginScreen() {
         placeholder="Password"
         secureTextEntry
         value={password}
+        autoCapitalize="none"
         onChangeText={(text) => setPassword(text)}
       />
       <TouchableOpacity style={styles.button} onPress={onSubmit}>
