@@ -44,10 +44,6 @@ export default function LoginScreen() {
     // console.log(username, password)
   }
 
-  const cekToken = async () => {
-    const token = await SecureStore.getItemAsync("access_token")
-    console.log(token)
-  }
 
   return (
     <View style={styles.container}>

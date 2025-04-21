@@ -8,10 +8,13 @@ import UserDetailScreen from "./screens/UserDetailScreen";
 import LoginScreen from "./screens/LoginScreen";
 import RegisterScreen from "./screens/RegisterScreen";
 import SearchUser from "./screens/searchScreen";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ApolloProvider } from "@apollo/client";
 import AuthContext from "./context/AuthContext";
 import client from "./config/apollo";
+import * as SecureStore from 'expo-secure-store';
+import PostScreen from "./screens/PostScreen";
+import NewPostScreen from "./screens/NewPostScreen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createMaterialTopTabNavigator();
@@ -32,13 +35,35 @@ const BerandaNavigator = () => {
           tabBarLabelStyle: { color: "#4267B2", fontWeight: "bold" }, // Facebook blue text
         }}
       >
-        <Tab.Screen name="Home" component={HomeScreen} />
+        <Tab.Screen name="Home" component={HomeNavigator} />
         <Tab.Screen name="Search" component={SearchUser} />
         <Tab.Screen name="Account" component={UserNavigator} />
       </Tab.Navigator>
     </View>
   );
 };
+
+const HomeNavigator = () => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+      name="HomeScreen"
+      component={HomeScreen}
+      options={{ headerShown: false }}
+      />
+      <Stack.Screen
+      name="PostScreen"
+      component={PostScreen}
+      options={{ headerShown: false }}
+      />
+      <Stack.Screen
+      name="NewPostScreen"
+      component={NewPostScreen}
+      options={{ headerShown: false }}
+      />
+    </Stack.Navigator>
+  )
+}
 
 const UserNavigator = () => {
   return (
@@ -59,6 +84,15 @@ const UserNavigator = () => {
 
 export default function App() {
   const [isSignedIn, setIsSignedIn] = useState(false);
+
+  const checkToken = async () => {
+    const isToken = await SecureStore.getItemAsync("access_token")
+    if (isToken) setIsSignedIn(true)
+  }
+
+  useEffect(() => {
+    checkToken()
+  }, [])
 
   return (
     <AuthContext.Provider value={{ isSignedIn, setIsSignedIn }}>

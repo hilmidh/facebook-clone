@@ -111,7 +111,7 @@ export const postResolvers = {
       // if (!newComment.username) {
       //   throw new Error("username is required");
       // }
-
+      await redis.del("posts");
       await PostModel.updateOne(
         { _id: new ObjectId(newComment.postId) },
         {
@@ -126,6 +126,7 @@ export const postResolvers = {
           },
         }
       );
+      
       return "Success add new comment";
     },
     LikePost: async function (_, args, contextValue) {
@@ -135,6 +136,13 @@ export const postResolvers = {
       // if (!username) {
       //   throw new Error("username is required");
       // }
+      const post = await PostModel.findOne({ _id: new ObjectId(postId) });
+      // console.log(post)
+      // console.log(post.likes.map(e => e.username).find(el => el === user.username)? "found" : "not")
+      const found = post.likes.map(e => e.username).find(el => el === user.username)
+      if(found){
+        throw new Error("You already liked this post")
+      }
       await PostModel.updateOne(
         { _id: new ObjectId(postId) },
         {
@@ -148,6 +156,7 @@ export const postResolvers = {
           },
         }
       );
+      await redis.del("posts");
       return "Success liking post";
     },
   },
