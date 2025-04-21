@@ -8,11 +8,12 @@ import { verifyToken } from "../server/helpers/jwt.js";
 import { ObjectId } from "mongodb";
 import UserModel from "./models/userModel.js";
 
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT || 3000;
 
 const server = new ApolloServer({
   typeDefs: [userTypeDefs, postTypeDefs, followTypeDefs],
   resolvers: [userResolvers, postResolvers, followResolvers],
+  introspection: true,
 });
 
 const { url } = await startStandaloneServer(server, {
